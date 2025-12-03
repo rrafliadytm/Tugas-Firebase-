@@ -26,40 +26,45 @@ export default function LoginPage() {
   const loginBg = PlaceHolderImages.find((img) => img.id === 'login-background');
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push('/');
-      } else {
-        // If no user, check for redirect result
-        getRedirectResult(auth)
-          .then((result) => {
-            if (result && result.user) {
-              // This will be handled by the onAuthStateChanged listener above
+    // Check if we are coming back from a redirect
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          // A user was successfully signed in. The onAuthStateChanged listener below
+          // will handle the redirect to the dashboard. We just need to wait.
+          // The loading state is already true, so we do nothing.
+        } else {
+          // No redirect result, check current auth state
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+              router.push('/');
             } else {
-              // No redirect result, so we can show the login page
+              // No user, stop loading and show the login page.
               setIsLoading(false);
             }
-          })
-          .catch((error) => {
-            console.error("Error during getRedirectResult:", error);
-            toast({
-              title: 'Login Error',
-              description: error.message || 'An error occurred during login.',
-              variant: 'destructive',
-            });
-            setIsLoading(false);
           });
-      }
-    });
-
-    return () => unsubscribe();
+          return unsubscribe;
+        }
+      })
+      .catch((error) => {
+        console.error("Error during getRedirectResult:", error);
+        toast({
+          title: 'Login Error',
+          description: error.message || 'An error occurred during login.',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+      });
   }, [router, toast]);
+  
 
   const handleGoogleSignIn = async () => {
     setIsSigningIn(true);
     try {
       await setPersistence(auth, browserLocalPersistence);
       await signInWithRedirect(auth, googleProvider);
+      // After this call, the page will redirect to Google.
+      // The logic in the useEffect will handle the result when the user is redirected back.
     } catch (error: any) {
       console.error("Error starting Google Sign-In:", error);
       toast({

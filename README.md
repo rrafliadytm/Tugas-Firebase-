@@ -1,5 +1,3 @@
-# Firebase Studio
+linkya cuy
 
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
+https://tugas-firebase.vercel.app/

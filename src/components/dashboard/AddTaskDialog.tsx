@@ -176,7 +176,7 @@ export default function AddTaskDialog({ categories, onTaskAdded }: AddTaskDialog
                       </FormControl>
                     </PopoverTrigger>
                     {/* PERUBAHAN ADA DI SINI: z-[9999] */}
-                    <PopoverContent className="w-auto p-0 z-[9999]" align="start">
+                    <PopoverContent className="w-auto p-0 pointer-events-auto z-[9999]" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value}
